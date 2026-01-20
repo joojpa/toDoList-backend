@@ -1,32 +1,35 @@
 package br.com.todolist.toDoList.entities;
 
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity(name = "tb_users")
+@NoArgsConstructor
 public class UserEntity {
 
+    @Getter
+    @Id
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Getter
+    @Column(nullable = false)
     private String name;
+
+    @Getter
+    @Column(nullable = false,unique = true)
     private String email;
+
+    @Column(nullable = false)
     private String password;
-
-    public UserEntity() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
 
     public void setName(String name) {
         if (name == null || name.isBlank()){
             throw new IllegalArgumentException("Nome inválido");
         }
         this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
     }
 
     public void setEmail(String email) {
