@@ -1,28 +1,32 @@
 package br.com.todolist.toDoList.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity(name = "tb_users")
 @NoArgsConstructor
 public class UserEntity {
 
-    @Getter
+
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Getter
+
     @Column(nullable = false)
     private String name;
 
-    @Getter
+
     @Column(nullable = false,unique = true)
     private String email;
 
     @Column(nullable = false)
+    @Getter
     private String password;
 
     public void setName(String name) {

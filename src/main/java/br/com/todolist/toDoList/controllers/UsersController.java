@@ -3,6 +3,8 @@ package br.com.todolist.toDoList.controllers;
 import br.com.todolist.toDoList.Repository.UserRepository;
 import br.com.todolist.toDoList.entities.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,19 +17,21 @@ public class UsersController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @PostMapping("/")
-    public UserEntity createUser(@RequestBody UserEntity userEntity){
+    public ResponseEntity createUser(@RequestBody UserEntity userEntity){
 
         var user = this.userRepository.findByEmail(userEntity.getEmail());
 
-        if (userEntity.getEmail() == null){
-            throw new RuntimeException("Email obrigatorio");
+        if (user.isPresent()){
+            return ResponseEntity.status(409).body("Usuario já existe");
         }
 
-        if (user != null){
-            System.out.println("Usuario ja existe");
-            return null;
-        }
-        return this.userRepository.save(userEntity);
+        userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
+
+         var userCreated = this.userRepository.save(userEntity);
+        return ResponseEntity.status(201).body(userCreated);
     }
 }
