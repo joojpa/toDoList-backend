@@ -23,6 +23,7 @@ public class UsersController {
     @PostMapping("/")
     public ResponseEntity createUser(@RequestBody UserEntity userEntity){
 
+
         var user = this.userRepository.findByEmail(userEntity.getEmail());
 
         if (user.isPresent()){
