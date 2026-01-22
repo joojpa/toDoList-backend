@@ -1,9 +1,7 @@
 package br.com.todolist.toDoList.entities;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,7 +24,6 @@ public class UserEntity {
     private String email;
 
     @Column(nullable = false)
-    @Getter
     private String password;
 
     public void setName(String name) {
