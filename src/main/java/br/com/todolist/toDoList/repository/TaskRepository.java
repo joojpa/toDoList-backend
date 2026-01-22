@@ -1,4 +1,4 @@
-package br.com.todolist.toDoList.Repository;
+package br.com.todolist.toDoList.repository;
 
 import br.com.todolist.toDoList.entities.TaskEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

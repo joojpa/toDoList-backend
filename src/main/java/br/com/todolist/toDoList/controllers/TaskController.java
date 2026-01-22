@@ -35,10 +35,9 @@ public class TaskController {
         return ResponseEntity.ok(tasks);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id,@RequestBody TaskEntity taskEntity, HttpServletRequest request){
-                Long userId = (Long) request.getAttribute("IdUser");
+    public ResponseEntity<?> update(@PathVariable Long id,@RequestAttribute("IdUser") Long userId,@RequestBody TaskEntity task, HttpServletRequest request){
 
-                var updateTask = taskService.updateTask(id,userId,taskEntity);
+                var updateTask = taskService.updateTask(id,userId,task);
 
                 return ResponseEntity.ok(updateTask);
     }

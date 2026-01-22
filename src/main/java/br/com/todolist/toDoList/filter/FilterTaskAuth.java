@@ -1,6 +1,6 @@
 package br.com.todolist.toDoList.filter;
 
-import br.com.todolist.toDoList.Repository.UserRepository;
+import br.com.todolist.toDoList.repository.UserRepository;
 import br.com.todolist.toDoList.entities.UserEntity;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,7 +27,7 @@ public class FilterTaskAuth extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         var servletPath = request.getServletPath();
-        if (servletPath.equals("/tasks/")) {
+        if (servletPath.startsWith("/tasks")) {
 
             var authorization = request.getHeader("Authorization");
 

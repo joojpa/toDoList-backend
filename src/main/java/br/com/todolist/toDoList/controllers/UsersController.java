@@ -1,6 +1,6 @@
 package br.com.todolist.toDoList.controllers;
 
-import br.com.todolist.toDoList.Repository.UserRepository;
+import br.com.todolist.toDoList.repository.UserRepository;
 import br.com.todolist.toDoList.entities.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
