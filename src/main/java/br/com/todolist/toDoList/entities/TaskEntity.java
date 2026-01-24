@@ -1,5 +1,6 @@
 package br.com.todolist.toDoList.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -16,8 +17,13 @@ public class TaskEntity {
     private String description;
     @Column(length = 50)
     private String title;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime startAt;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime endAt;
+    
     private String priority;
     private Long idUser;
 
