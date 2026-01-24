@@ -1,5 +1,8 @@
 package br.com.todolist.toDoList.controllers;
 
+import br.com.todolist.toDoList.dtos.task.TaskCreateDTO;
+import br.com.todolist.toDoList.dtos.task.TaskResponseDTO;
+import br.com.todolist.toDoList.dtos.task.TaskUpdateDTO;
 import br.com.todolist.toDoList.entities.TaskEntity;
 import br.com.todolist.toDoList.services.TaskService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,30 +21,33 @@ public class TaskController {
     private TaskService taskService;
 
     @PostMapping("/")
-    public ResponseEntity<?> create(@RequestBody TaskEntity taskEntity,
-                                    HttpServletRequest request) {
+    public ResponseEntity<TaskResponseDTO> create(
+            @RequestBody TaskCreateDTO taskDTO,
+            HttpServletRequest request) {
+
         Long userId = (Long) request.getAttribute("IdUser");
 
-        var task = taskService.createTask(taskEntity, userId);
+        TaskResponseDTO task = taskService.createTask(taskDTO, userId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(task);
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<TaskEntity>> list(HttpServletRequest request) {
-        Long idUser = (Long) request.getAttribute("IdUser");
-        var tasks = taskService.listTasksByUser(idUser);
-
+    public ResponseEntity<List<TaskResponseDTO>> list(
+            @RequestAttribute("IdUser") Long userId
+    ) {
+        var tasks = taskService.listTasksByUser(userId);
         return ResponseEntity.ok(tasks);
     }
+
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(
+    public ResponseEntity<TaskResponseDTO> update(
             @PathVariable Long id,
             @RequestAttribute("IdUser") Long userId,
-            @RequestBody TaskEntity task,
+            @RequestBody TaskUpdateDTO task,
             HttpServletRequest request){
 
-                var updateTask = taskService.updateTask(id,userId,task);
+                TaskResponseDTO updateTask = taskService.updateTask(id,userId,task);
 
                 return ResponseEntity.ok(updateTask);
     }

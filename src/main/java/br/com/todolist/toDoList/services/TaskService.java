@@ -1,6 +1,8 @@
 package br.com.todolist.toDoList.services;
 
-import br.com.todolist.toDoList.entities.UserEntity;
+import br.com.todolist.toDoList.dtos.task.TaskCreateDTO;
+import br.com.todolist.toDoList.dtos.task.TaskResponseDTO;
+import br.com.todolist.toDoList.dtos.task.TaskUpdateDTO;
 import br.com.todolist.toDoList.repository.TaskRepository;
 import br.com.todolist.toDoList.entities.TaskEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,26 +18,35 @@ public class TaskService {
     @Autowired
     private TaskRepository taskRepository;
 
-    public TaskEntity createTask(TaskEntity taskEntity, Long userId) {
-        taskEntity.setIdUser(userId);
-        validateDatesForCreate(taskEntity.getStartAt(), taskEntity.getEndAt());
-        return taskRepository.save(taskEntity);
+    public TaskResponseDTO createTask(TaskCreateDTO taskDTO, Long userId) {
+        validateDatesForCreate(taskDTO.startAt(), taskDTO.endAt());
+
+        TaskEntity task = new TaskEntity();
+        task.setTitle(taskDTO.title());
+        task.setDescription(taskDTO.description());
+        task.setStartAt(taskDTO.startAt());
+        task.setEndAt(taskDTO.endAt());
+        task.setIdUser(userId);
+
+
+        return mapToResponse(taskRepository.save(task));
     }
 
-    public List<TaskEntity> listTasksByUser(Long userId) {
-        return taskRepository.findByIdUser(userId);
+    public List<TaskResponseDTO> listTasksByUser(Long userId) {
+        return taskRepository.findByIdUser(userId).stream().map(this::mapToResponse).toList();
     }
 
-    public TaskEntity updateTask(Long taskId, Long userId, TaskEntity taskData) {
+    public TaskResponseDTO updateTask(Long taskId, Long userId, TaskUpdateDTO taskDTO) {
         TaskEntity task = taskRepository.findByIdAndIdUser(taskId,userId).
                 orElseThrow(() -> new IllegalArgumentException("Tarefa não encontrada"));
 
-        validateDatesForUpdate(taskData.getStartAt(), taskData.getEndAt());
-        task.setTitle(taskData.getTitle());
-        task.setDescription(taskData.getDescription());
-        task.setStartAt(taskData.getStartAt());
-        task.setEndAt(taskData.getEndAt());
-        return taskRepository.save(task);
+        validateDatesForUpdate(taskDTO.startAt(), taskDTO.endAt());
+        task.setTitle(taskDTO.title());
+        task.setDescription(taskDTO.description());
+        task.setStartAt(taskDTO.startAt());
+        task.setEndAt(taskDTO.endAt());
+
+        return mapToResponse(taskRepository.save(task));
     }
     public void deleteTask(Long taskId, Long userId) {
 
@@ -96,5 +107,17 @@ public class TaskService {
                     HttpStatus.BAD_REQUEST,
                     "A data de início não pode ser no passado");
         }
+
+    }private TaskResponseDTO mapToResponse(TaskEntity task) {
+        return new TaskResponseDTO(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getStartAt(),
+                task.getEndAt()
+        );
     }
+
+
+
 }

@@ -50,14 +50,16 @@ Edite o arquivo `src/main/resources/application.properties` com suas credenciais
 
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/todolist
-spring.datasource.username=seu_usuario
-spring.datasource.password=sua_senha
+spring.datasource.username=admin
+spring.datasource.password=admin
 
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
 spring.jpa.open-in-view=false
 ```
+
+**Nota:** Altere `username` e `password` conforme suas credenciais do PostgreSQL.
 
 **Propriedades importantes:**
 - `spring.jpa.hibernate.ddl-auto=update`: Cria/atualiza automaticamente as tabelas do banco
@@ -104,7 +106,6 @@ A aplicação estará disponível em: `http://localhost:8080`
 ```
 src/main/java/br/com/todolist/toDoList/
 ├── config/              # Configurações
-│   ├── CorsConfig.java         # Configuração CORS
 │   └── SecurityConfig.java     # Configuração de segurança (BCrypt)
 ├── controllers/         # Controladores REST
 │   ├── TaskController.java     # Endpoints de tarefas
@@ -302,10 +303,10 @@ fetch('http://localhost:8080/tasks/', {
 | title      | String         | Título da tarefa              | Obrigatório, máximo 50 caracteres |
 | description| String         | Descrição da tarefa           | Opcional                       |
 | priority   | String         | Prioridade (BAIXA/MEDIA/ALTA) | Obrigatório                    |
-| startAt    | LocalDateTime  | Data/hora de início           | Obrigatório, formato: yyyy-MM-dd'T'HH:mm:ss |
-| endAt      | LocalDateTime  | Data/hora de término          | Obrigatório, formato: yyyy-MM-dd'T'HH:mm:ss |
+| startAt    | LocalDateTime  | Data/hora de início           | Obrigatório, formato: yyyy-MM-dd'T'HH:mm:ss (com @JsonFormat) |
+| endAt      | LocalDateTime  | Data/hora de término          | Obrigatório, formato: yyyy-MM-dd'T'HH:mm:ss (com @JsonFormat) |
 | idUser     | Long           | ID do usuário proprietário    | Definido automaticamente       |
-| createdAt  | LocalDateTime  | Data de criação               | Gerado automaticamente         |
+| createdAt  | LocalDateTime  | Data de criação               | Gerado automaticamente (@CreationTimestamp) |
 
 ## ✅ Validações
 
@@ -336,27 +337,26 @@ fetch('http://localhost:8080/tasks/', {
 
 ## 🌐 CORS
 
-A aplicação está configurada para aceitar requisições de qualquer origem (configurado em `CorsConfig.java`). 
+O filtro de autenticação (`FilterTaskAuth`) permite requisições OPTIONS (preflight) para suportar CORS. 
 
-**⚠️ Atenção:** Em produção, configure para aceitar apenas o domínio do seu frontend:
-
-```java
-config.addAllowedOrigin("https://seu-frontend.com");
-```
+**⚠️ Atenção:** Para produção, recomenda-se adicionar uma configuração CORS específica para controlar quais origens podem acessar a API. Você pode criar uma classe `CorsConfig` ou adicionar anotações `@CrossOrigin` nos controllers.
 
 ## 🔒 Segurança
 
-- Senhas são armazenadas usando **BCrypt** (hash unidirecional)
-- Autenticação via **Basic Auth** para endpoints de tarefas
-- Validação de propriedade: usuários só podem acessar suas próprias tarefas
-- Filtro de autenticação customizado (`FilterTaskAuth`)
+- Senhas são armazenadas usando **BCrypt** (hash unidirecional) através do `PasswordEncoder` configurado em `SecurityConfig`
+- Autenticação via **Basic Auth** para endpoints de tarefas através do filtro `FilterTaskAuth`
+- Validação de propriedade: usuários só podem acessar suas próprias tarefas (verificado no `TaskService`)
+- Filtro de autenticação customizado que permite requisições OPTIONS (preflight CORS)
+- Validações de entrada nas entidades (`UserEntity` valida nome, email e senha)
 
 ## 📝 Notas Importantes
 
-1. **Formato de Data**: As datas devem ser enviadas no formato `yyyy-MM-dd'T'HH:mm:ss` (sem timezone)
+1. **Formato de Data**: As datas devem ser enviadas no formato `yyyy-MM-dd'T'HH:mm:ss` (sem timezone). A entidade `TaskEntity` utiliza `@JsonFormat` para garantir o formato correto.
 2. **Prioridade**: Valores aceitos são `BAIXA`, `MEDIA` ou `ALTA`
 3. **Isolamento de Dados**: Cada usuário só visualiza e gerencia suas próprias tarefas
 4. **DDL Auto**: A aplicação cria/atualiza automaticamente as tabelas no banco (`ddl-auto=update`)
+5. **Filtro de Autenticação**: O `FilterTaskAuth` intercepta requisições para `/tasks/*` e valida credenciais via Basic Auth
+6. **Validação de Datas**: O `TaskService` valida que datas não sejam no passado e que `endAt` seja posterior a `startAt`
 
 ## 🐛 Troubleshooting
 
