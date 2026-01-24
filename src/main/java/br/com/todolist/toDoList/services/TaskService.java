@@ -40,6 +40,21 @@ public class TaskService {
         task.setEndAt(taskData.getEndAt());
         return taskRepository.save(task);
     }
+    public void deleteTask(Long taskId, Long userId) {
+
+        TaskEntity task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Tarefa não encontrada"));
+
+        if (!task.getIdUser().equals(userId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Tarefa não encontrada");
+        }
+
+        taskRepository.delete(task);
+    }
+
+
 
     private void validateDatesForCreate(LocalDateTime startAt, LocalDateTime endAt) {
 

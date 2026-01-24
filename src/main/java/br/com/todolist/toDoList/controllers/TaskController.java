@@ -35,10 +35,23 @@ public class TaskController {
         return ResponseEntity.ok(tasks);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id,@RequestAttribute("IdUser") Long userId,@RequestBody TaskEntity task, HttpServletRequest request){
+    public ResponseEntity<?> update(
+            @PathVariable Long id,
+            @RequestAttribute("IdUser") Long userId,
+            @RequestBody TaskEntity task,
+            HttpServletRequest request){
 
                 var updateTask = taskService.updateTask(id,userId,task);
 
                 return ResponseEntity.ok(updateTask);
     }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(
+            @PathVariable Long id,
+            @RequestAttribute("IdUser") Long userId
+    ) {
+        taskService.deleteTask(id, userId);
+        return ResponseEntity.noContent().build();
+    }
+
 }
