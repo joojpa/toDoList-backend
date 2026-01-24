@@ -1,5 +1,6 @@
 package br.com.todolist.toDoList.services;
 
+import br.com.todolist.toDoList.entities.UserEntity;
 import br.com.todolist.toDoList.repository.TaskRepository;
 import br.com.todolist.toDoList.entities.TaskEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +27,8 @@ public class TaskService {
     }
 
     public TaskEntity updateTask(Long taskId, Long userId, TaskEntity taskData) {
-        TaskEntity task = taskRepository.findById(taskId).orElseThrow(() -> new IllegalArgumentException("Tarefa não encontrada"));
-
-        if (!task.getIdUser().equals(userId)) {
-
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Tarefa não encontrada");
-        }
+        TaskEntity task = taskRepository.findByIdAndIdUser(taskId,userId).
+                orElseThrow(() -> new IllegalArgumentException("Tarefa não encontrada"));
 
         validateDatesForUpdate(taskData.getStartAt(), taskData.getEndAt());
         task.setTitle(taskData.getTitle());
@@ -42,9 +39,8 @@ public class TaskService {
     }
     public void deleteTask(Long taskId, Long userId) {
 
-        TaskEntity task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Tarefa não encontrada"));
+        TaskEntity task = taskRepository.findByIdAndIdUser(taskId,userId).
+                orElseThrow(() -> new IllegalArgumentException("Tarefa não encontrada"));
 
         if (!task.getIdUser().equals(userId)) {
             throw new ResponseStatusException(

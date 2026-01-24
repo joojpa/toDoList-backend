@@ -1,5 +1,7 @@
 package br.com.todolist.toDoList.services;
 
+import br.com.todolist.toDoList.dtos.user.UserCreateDTO;
+import br.com.todolist.toDoList.dtos.user.UserResponseDTO;
 import br.com.todolist.toDoList.entities.UserEntity;
 import br.com.todolist.toDoList.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,21 +19,26 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public UserEntity createUser(UserEntity userEntity) {
+    public UserResponseDTO createUser(UserCreateDTO userDTO) {
 
-        var userExists = userRepository.findByEmail(userEntity.getEmail());
-
-        if (userExists.isPresent()) {
+        if (userRepository.findByEmail(userDTO.email()).isPresent()) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "Usuário já existe"
             );
         }
 
-        userEntity.setPassword(
-                passwordEncoder.encode(userEntity.getPassword())
-        );
+        UserEntity user = new UserEntity();
+        user.setName(userDTO.name());
+        user.setEmail(userDTO.email());
+        user.setPassword(passwordEncoder.encode(userDTO.password()));
 
-        return userRepository.save(userEntity);
+        UserEntity saved = userRepository.save(user);
+
+        return new UserResponseDTO(
+                saved.getId(),
+                saved.getName(),
+                saved.getEmail()
+        );
     }
 }

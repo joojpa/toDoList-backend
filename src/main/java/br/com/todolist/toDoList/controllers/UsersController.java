@@ -1,5 +1,7 @@
 package br.com.todolist.toDoList.controllers;
 
+import br.com.todolist.toDoList.dtos.user.UserCreateDTO;
+import br.com.todolist.toDoList.dtos.user.UserResponseDTO;
 import br.com.todolist.toDoList.entities.UserEntity;
 import br.com.todolist.toDoList.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +20,10 @@ public class UsersController {
     private UserService userService;
 
     @PostMapping("/")
-    public ResponseEntity<UserEntity> createUser(
-            @RequestBody UserEntity userEntity
+    public ResponseEntity<UserResponseDTO> createUser(
+            @RequestBody UserCreateDTO userDTO
     ) {
-        var userCreated = userService.createUser(userEntity);
+        var userCreated = userService.createUser(userDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(userCreated);
     }
 }
