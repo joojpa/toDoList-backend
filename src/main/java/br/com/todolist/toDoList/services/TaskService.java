@@ -53,9 +53,6 @@ public class TaskService {
 
         taskRepository.delete(task);
     }
-
-
-
     private void validateDatesForCreate(LocalDateTime startAt, LocalDateTime endAt) {
 
         if (startAt == null || endAt == null) {
