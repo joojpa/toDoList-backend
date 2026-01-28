@@ -1,52 +1,50 @@
-# ToDo List - Backend API
+# ToDo List – Backend API
 
-API REST desenvolvida em Java com Spring Boot para gerenciamento de tarefas (ToDo List).
+REST API developed in **Java with Spring Boot** for task management (ToDo List).
 
-## 📋 Índice
+##  Index
 
-- [Tecnologias](#tecnologias)
-- [Pré-requisitos](#pré-requisitos)
-- [Configuração](#configuração)
-- [Executando a Aplicação](#executando-a-aplicação)
-- [Estrutura do Projeto](#estrutura-do-projeto)
-- [Endpoints da API](#endpoints-da-api)
-- [Autenticação](#autenticação)
-- [Modelos de Dados](#modelos-de-dados)
-- [Validações](#validações)
+- [Technologies](#technologies)
+- [Prerequisites](#prerequisites)
+- [Configuration](#configuration)
+- [Running the Application](#running-the-application)
+- [Project Structure](#project-structure)
+- [API Endpoints](#api-endpoints)
+- [Authentication](#authentication)
+- [Data Models](#data-models)
+- [Validations](#validations)
 - [CORS](#cors)
 
-## 🛠 Tecnologias
+## Technologies
 
-- **Java 17**
-- **Spring Boot 4.0.1**
-- **Spring Data JPA**
-- **PostgreSQL**
-- **Spring Security Crypto** (BCrypt para hash de senhas)
-- **Lombok**
-- **Maven**
+* **Java 17**
+* **Spring Boot 4.0.1**
+* **Spring Data JPA**
+* **PostgreSQL**
+* **Spring Security Crypto** (BCrypt for password hashing)
+* **Lombok**
+* **Maven**
 
-## 📦 Pré-requisitos
+##  Prerequisites
 
-Antes de executar a aplicação, certifique-se de ter instalado:
+Before running the application, make sure you have installed:
 
-- Java 17 ou superior
-- Maven 3.6+ (ou use o Maven Wrapper incluído)
-- PostgreSQL 12+ (ou superior)
-- IDE de sua preferência (IntelliJ IDEA, Eclipse, VS Code, etc.)
+* Java 17 or higher
+* Maven 3.6+ (or use the included Maven Wrapper)
+* PostgreSQL 12+
+* An IDE of your choice (IntelliJ IDEA, Eclipse, VS Code, etc.)
 
-## ⚙️ Configuração
+##  Configuration
 
-### 1. Banco de Dados PostgreSQL
-
-Crie um banco de dados PostgreSQL:
+### 1. PostgreSQL Database
 
 ```sql
 CREATE DATABASE todolist;
 ```
 
-### 2. Configuração da Aplicação
+### 2. Application Configuration
 
-Edite o arquivo `src/main/resources/application.properties` com suas credenciais do PostgreSQL:
+Edit the file `src/main/resources/application.properties` with your PostgreSQL credentials:
 
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/todolist
@@ -59,322 +57,165 @@ spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
 spring.jpa.open-in-view=false
 ```
 
-**Nota:** Altere `username` e `password` conforme suas credenciais do PostgreSQL.
+##  Running the Application
 
-**Propriedades importantes:**
-- `spring.jpa.hibernate.ddl-auto=update`: Cria/atualiza automaticamente as tabelas do banco
-- `spring.jpa.show-sql=true`: Exibe as queries SQL no console (útil para debug)
-
-## 🚀 Executando a Aplicação
-
-### Usando Maven Wrapper
+### Using Maven Wrapper
 
 **Windows:**
+
 ```bash
 .\mvnw.cmd spring-boot:run
 ```
 
 **Linux/Mac:**
+
 ```bash
 ./mvnw spring-boot:run
 ```
 
-### Usando Maven instalado
+### Using Installed Maven
 
 ```bash
 mvn spring-boot:run
 ```
 
-### Executando o JAR
-
-Primeiro, compile o projeto:
+### Running the JAR
 
 ```bash
 mvn clean package
-```
-
-Depois, execute o JAR gerado:
-
-```bash
 java -jar target/toDoList-0.0.1-SNAPSHOT.jar
 ```
 
-A aplicação estará disponível em: `http://localhost:8080`
+The application will be available at:
 
-## 📁 Estrutura do Projeto
+```
+http://localhost:8080
+```
+
+##  Project Structure
 
 ```
 src/main/java/br/com/todolist/toDoList/
-├── config/              # Configurações
-│   └── SecurityConfig.java     # Configuração de segurança (BCrypt)
-├── controllers/         # Controladores REST
-│   ├── TaskController.java     # Endpoints de tarefas
-│   └── UsersController.java    # Endpoints de usuários
-├── entities/           # Entidades JPA
-│   ├── TaskEntity.java         # Entidade de Tarefa
-│   └── UserEntity.java         # Entidade de Usuário
-├── filter/             # Filtros
-│   └── FilterTaskAuth.java    # Filtro de autenticação Basic Auth
-├── repository/         # Repositórios JPA
-│   ├── TaskRepository.java     # Repositório de Tarefas
-│   └── UserRepository.java     # Repositório de Usuários
-├── services/           # Lógica de negócio
-│   ├── TaskService.java        # Serviço de Tarefas
-│   └── UserService.java        # Serviço de Usuários
-└── ToDoListApplication.java    # Classe principal
+├── config/
+│   └── SecurityConfig.java
+├── controllers/
+│   ├── TaskController.java
+│   └── UsersController.java
+├── entities/
+│   ├── TaskEntity.java
+│   └── UserEntity.java
+├── filter/
+│   └── FilterTaskAuth.java
+├── repository/
+│   ├── TaskRepository.java
+│   └── UserRepository.java
+├── services/
+│   ├── TaskService.java
+│   └── UserService.java
+└── ToDoListApplication.java
 ```
 
-## 🔌 Endpoints da API
+##  API Endpoints
 
-### Usuários
+### Users
 
-#### Criar Usuário
+#### Create User
+
 ```http
 POST /users/
 Content-Type: application/json
-
-{
-  "name": "João Silva",
-  "email": "joao@example.com",
-  "password": "senha123"
-}
 ```
 
-**Resposta (201 Created):**
 ```json
 {
-  "id": 1,
-  "name": "João Silva",
-  "email": "joao@example.com"
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "password123"
 }
 ```
 
-**Validações:**
-- Nome: obrigatório, não pode ser vazio
-- Email: obrigatório, deve conter "@", único no sistema
-- Senha: obrigatória, mínimo 6 caracteres
+### Tasks (Protected with Basic Auth)
 
-### Tarefas
+#### Create Task
 
-Todas as rotas de tarefas requerem autenticação Basic Auth.
-
-#### Criar Tarefa
 ```http
 POST /tasks/
-Authorization: Basic base64(email:senha)
+Authorization: Basic base64(email:password)
 Content-Type: application/json
-
-{
-  "title": "Reunião com equipe",
-  "description": "Discutir próximos passos do projeto",
-  "priority": "ALTA",
-  "startAt": "2026-01-25T10:00:00",
-  "endAt": "2026-01-25T11:00:00"
-}
 ```
 
-**Resposta (201 Created):**
-```json
-{
-  "id": 1,
-  "title": "Reunião com equipe",
-  "description": "Discutir próximos passos do projeto",
-  "priority": "ALTA",
-  "startAt": "2026-01-25T10:00:00",
-  "endAt": "2026-01-25T11:00:00",
-  "idUser": 1,
-  "createdAt": "2026-01-24T15:30:00"
-}
-```
+#### List Tasks
 
-#### Listar Tarefas do Usuário
 ```http
 GET /tasks/
-Authorization: Basic base64(email:senha)
+Authorization: Basic base64(email:password)
 ```
 
-**Resposta (200 OK):**
-```json
-[
-  {
-    "id": 1,
-    "title": "Reunião com equipe",
-    "description": "Discutir próximos passos do projeto",
-    "priority": "ALTA",
-    "startAt": "2026-01-25T10:00:00",
-    "endAt": "2026-01-25T11:00:00",
-    "idUser": 1,
-    "createdAt": "2026-01-24T15:30:00"
-  }
-]
-```
+#### Update Task
 
-#### Atualizar Tarefa
 ```http
 PUT /tasks/{id}
-Authorization: Basic base64(email:senha)
-Content-Type: application/json
-
-{
-  "title": "Reunião com equipe - Atualizada",
-  "description": "Nova descrição",
-  "priority": "MEDIA",
-  "startAt": "2026-01-25T10:00:00",
-  "endAt": "2026-01-25T11:30:00"
-}
+Authorization: Basic base64(email:password)
 ```
 
-**Resposta (200 OK):**
-```json
-{
-  "id": 1,
-  "title": "Reunião com equipe - Atualizada",
-  "description": "Nova descrição",
-  "priority": "MEDIA",
-  "startAt": "2026-01-25T10:00:00",
-  "endAt": "2026-01-25T11:30:00",
-  "idUser": 1,
-  "createdAt": "2026-01-24T15:30:00"
-}
-```
+#### Delete Task
 
-#### Excluir Tarefa
 ```http
 DELETE /tasks/{id}
-Authorization: Basic base64(email:senha)
+Authorization: Basic base64(email:password)
 ```
 
-**Resposta (204 No Content)**
+##  Authentication
 
-## 🔐 Autenticação
+This API uses **Basic Authentication** for task-related endpoints.
 
-A API utiliza **Basic Authentication** para proteger os endpoints de tarefas.
+* Credentials are sent via the `Authorization` header
+* Passwords are validated using BCrypt
+* Users can only access their own tasks
 
-### Como funciona
-
-1. O cliente envia as credenciais (email e senha) no header `Authorization` usando Basic Auth
-2. O filtro `FilterTaskAuth` intercepta requisições para `/tasks/*`
-3. As credenciais são decodificadas e validadas contra o banco de dados
-4. A senha é verificada usando BCrypt
-5. Se válido, o ID do usuário é adicionado como atributo da requisição
-6. O usuário só pode acessar suas próprias tarefas
-
-### Exemplo de uso
-
-```javascript
-const email = 'joao@example.com'
-const password = 'senha123'
-const credentials = btoa(`${email}:${password}`)
-
-fetch('http://localhost:8080/tasks/', {
-  headers: {
-    'Authorization': `Basic ${credentials}`
-  }
-})
-```
-
-### Endpoints protegidos
-
-- `POST /tasks/` - Criar tarefa
-- `GET /tasks/` - Listar tarefas
-- `PUT /tasks/{id}` - Atualizar tarefa
-- `DELETE /tasks/{id}` - Excluir tarefa
-
-### Endpoints públicos
-
-- `POST /users/` - Criar usuário (não requer autenticação)
-
-## 📊 Modelos de Dados
+##  Data Models
 
 ### UserEntity
 
-| Campo     | Tipo   | Descrição                    | Validações                    |
-|-----------|--------|------------------------------|-------------------------------|
-| id        | Long   | ID único do usuário          | Gerado automaticamente        |
-| name      | String | Nome do usuário              | Obrigatório, não vazio        |
-| email     | String | Email do usuário             | Obrigatório, único, deve conter "@" |
-| password  | String | Senha (hash BCrypt)          | Obrigatório, mínimo 6 caracteres |
+| Field    | Type   | Description  |
+| -------- | ------ | ------------ |
+| id       | Long   | User ID      |
+| name     | String | User name    |
+| email    | String | Unique email |
+| password | String | BCrypt hash  |
 
 ### TaskEntity
 
-| Campo      | Tipo           | Descrição                    | Validações                    |
-|------------|----------------|------------------------------|-------------------------------|
-| id         | Long           | ID único da tarefa           | Gerado automaticamente         |
-| title      | String         | Título da tarefa              | Obrigatório, máximo 50 caracteres |
-| description| String         | Descrição da tarefa           | Opcional                       |
-| priority   | String         | Prioridade (BAIXA/MEDIA/ALTA) | Obrigatório                    |
-| startAt    | LocalDateTime  | Data/hora de início           | Obrigatório, formato: yyyy-MM-dd'T'HH:mm:ss (com @JsonFormat) |
-| endAt      | LocalDateTime  | Data/hora de término          | Obrigatório, formato: yyyy-MM-dd'T'HH:mm:ss (com @JsonFormat) |
-| idUser     | Long           | ID do usuário proprietário    | Definido automaticamente       |
-| createdAt  | LocalDateTime  | Data de criação               | Gerado automaticamente (@CreationTimestamp) |
+| Field       | Type          | Description         |
+| ----------- | ------------- | ------------------- |
+| id          | Long          | Task ID             |
+| title       | String        | Task title          |
+| description | String        | Task description    |
+| priority    | String        | LOW / MEDIUM / HIGH |
+| startAt     | LocalDateTime | Start time          |
+| endAt       | LocalDateTime | End time            |
+| idUser      | Long          | Owner user ID       |
+| createdAt   | LocalDateTime | Creation date       |
 
-## ✅ Validações
+##  Validations
 
-### Validações de Usuário
+* Dates cannot be in the past
+* `endAt` must be after `startAt`
+* Only the task owner can update or delete tasks
+* Priority must be `LOW`, `MEDIUM` or `HIGH`
 
-- **Nome**: Não pode ser nulo ou vazio
-- **Email**: Não pode ser nulo, deve conter "@", deve ser único no sistema
-- **Senha**: Não pode ser nula, vazia ou ter menos de 6 caracteres
+##  CORS
 
-### Validações de Tarefa
+The authentication filter allows **OPTIONS** requests for CORS preflight.
 
-#### Criação:
-- `startAt` e `endAt` são obrigatórios
-- `startAt` não pode ser no passado
-- `endAt` não pode ser no passado
-- `endAt` deve ser depois de `startAt`
-- `title` é obrigatório (máximo 50 caracteres)
-- `priority` deve ser: BAIXA, MEDIA ou ALTA
+For production environments, it is recommended to configure a dedicated CORS policy.
 
-#### Atualização:
-- `startAt` e `endAt` são obrigatórios
-- `startAt` não pode ser no passado
-- `endAt` deve ser depois de `startAt`
-- Apenas o proprietário da tarefa pode atualizá-la
+## 🔒 Security
 
-#### Exclusão:
-- Apenas o proprietário da tarefa pode excluí-la
+* Password hashing with **BCrypt**
+* Custom authentication filter
+* Task ownership validation
 
-## 🌐 CORS
+## 📄 License
 
-O filtro de autenticação (`FilterTaskAuth`) permite requisições OPTIONS (preflight) para suportar CORS. 
-
-**⚠️ Atenção:** Para produção, recomenda-se adicionar uma configuração CORS específica para controlar quais origens podem acessar a API. Você pode criar uma classe `CorsConfig` ou adicionar anotações `@CrossOrigin` nos controllers.
-
-## 🔒 Segurança
-
-- Senhas são armazenadas usando **BCrypt** (hash unidirecional) através do `PasswordEncoder` configurado em `SecurityConfig`
-- Autenticação via **Basic Auth** para endpoints de tarefas através do filtro `FilterTaskAuth`
-- Validação de propriedade: usuários só podem acessar suas próprias tarefas (verificado no `TaskService`)
-- Filtro de autenticação customizado que permite requisições OPTIONS (preflight CORS)
-- Validações de entrada nas entidades (`UserEntity` valida nome, email e senha)
-
-## 📝 Notas Importantes
-
-1. **Formato de Data**: As datas devem ser enviadas no formato `yyyy-MM-dd'T'HH:mm:ss` (sem timezone). A entidade `TaskEntity` utiliza `@JsonFormat` para garantir o formato correto.
-2. **Prioridade**: Valores aceitos são `BAIXA`, `MEDIA` ou `ALTA`
-3. **Isolamento de Dados**: Cada usuário só visualiza e gerencia suas próprias tarefas
-4. **DDL Auto**: A aplicação cria/atualiza automaticamente as tabelas no banco (`ddl-auto=update`)
-5. **Filtro de Autenticação**: O `FilterTaskAuth` intercepta requisições para `/tasks/*` e valida credenciais via Basic Auth
-6. **Validação de Datas**: O `TaskService` valida que datas não sejam no passado e que `endAt` seja posterior a `startAt`
-
-## 🐛 Troubleshooting
-
-### Erro de conexão com o banco
-- Verifique se o PostgreSQL está rodando
-- Confirme as credenciais no `application.properties`
-- Verifique se o banco `todolist` foi criado
-
-### Erro 401 Unauthorized
-- Verifique se está enviando o header `Authorization` corretamente
-- Confirme que o email e senha estão corretos
-- Certifique-se de que o usuário existe no banco
-
-### Erro 400 Bad Request
-- Verifique se todos os campos obrigatórios foram enviados
-- Confirme o formato das datas (`yyyy-MM-dd'T'HH:mm:ss`)
-- Verifique as validações de negócio (datas no passado, etc.)
-
-## 📄 Licença
-
-Este projeto é de uso educacional.
+This project is intended for **educational purposes**.
