@@ -3,9 +3,8 @@ package br.com.todolist.toDoList.controllers;
 import br.com.todolist.toDoList.dtos.task.TaskCreateDTO;
 import br.com.todolist.toDoList.dtos.task.TaskResponseDTO;
 import br.com.todolist.toDoList.dtos.task.TaskUpdateDTO;
-import br.com.todolist.toDoList.entities.TaskEntity;
 import br.com.todolist.toDoList.services.TaskService;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +21,8 @@ public class TaskController {
 
     @PostMapping("/")
     public ResponseEntity<TaskResponseDTO> create(
-            @RequestBody TaskCreateDTO taskDTO,
-            HttpServletRequest request) {
-
-        Long userId = (Long) request.getAttribute("IdUser");
+            @RequestBody @Valid TaskCreateDTO taskDTO,
+            @RequestAttribute("IdUser") Long userId) {
 
         TaskResponseDTO task = taskService.createTask(taskDTO, userId);
 
@@ -34,28 +31,24 @@ public class TaskController {
 
     @GetMapping("/")
     public ResponseEntity<List<TaskResponseDTO>> list(
-            @RequestAttribute("IdUser") Long userId
-    ) {
-        var tasks = taskService.listTasksByUser(userId);
-        return ResponseEntity.ok(tasks);
+            @RequestAttribute("IdUser") Long userId) {
+
+        return ResponseEntity.ok(taskService.listTasksByUser(userId));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<TaskResponseDTO> update(
             @PathVariable Long id,
-            @RequestAttribute("IdUser") Long userId,
-            @RequestBody TaskUpdateDTO task,
-            HttpServletRequest request){
+            @RequestBody @Valid TaskUpdateDTO task,
+            @RequestAttribute("IdUser") Long userId){
 
-                TaskResponseDTO updateTask = taskService.updateTask(id,userId,task);
-
-                return ResponseEntity.ok(updateTask);
+                return ResponseEntity.ok(taskService.updateTask(id,userId,task));
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
             @PathVariable Long id,
-            @RequestAttribute("IdUser") Long userId
-    ) {
+            @RequestAttribute("IdUser") Long userId) {
+
         taskService.deleteTask(id, userId);
         return ResponseEntity.noContent().build();
     }
