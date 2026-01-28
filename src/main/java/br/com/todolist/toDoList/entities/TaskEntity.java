@@ -1,5 +1,6 @@
 package br.com.todolist.toDoList.entities;
 
+import br.com.todolist.toDoList.enums.Status;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -17,6 +18,8 @@ public class TaskEntity {
     private String description;
     @Column(length = 50)
     private String title;
+    @Enumerated(EnumType.STRING)
+    private Status status;
     
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime startAt;

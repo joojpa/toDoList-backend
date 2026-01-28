@@ -2,7 +2,6 @@ package br.com.todolist.toDoList.controllers;
 
 import br.com.todolist.toDoList.dtos.user.UserCreateDTO;
 import br.com.todolist.toDoList.dtos.user.UserResponseDTO;
-import br.com.todolist.toDoList.entities.UserEntity;
 import br.com.todolist.toDoList.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,8 +22,8 @@ public class UsersController {
     public ResponseEntity<UserResponseDTO> createUser(
             @RequestBody UserCreateDTO userDTO
     ) {
-        var userCreated = userService.createUser(userDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(userCreated);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userDTO));
     }
 }
 
