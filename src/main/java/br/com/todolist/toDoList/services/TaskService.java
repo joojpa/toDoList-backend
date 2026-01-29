@@ -38,7 +38,6 @@ public class TaskService {
 
         return mapToResponse(taskRepository.save(task));
     }
-
     public List<TaskResponseDTO> listTasksByUser(Long userId) {
         return taskRepository.findByIdUser(userId).stream().map(this::mapToResponse).toList();
     }
